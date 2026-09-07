@@ -30,26 +30,22 @@ export default function Home() {
       <header className="masthead">
         <a className="brand" href="/" aria-label="Princess Skye home">
           <span className="monogram" aria-hidden="true">P<span>S</span></span>
-          <span className="brand-name">PRINCESS SKYE</span>
         </a>
-        <span className="edition"><span className="tiny-diamond" /> A WORLD APART</span>
         <span className="age-badge">18<span>+</span></span>
       </header>
 
       <section className="hero" aria-label="Welcome to Princess Skye">
         <div className="hero-content">
-          <div className="eyebrow"><span />{entered ? "YOU’VE ARRIVED" : "HER WORLD. HER RULES."}</div>
           <h1 className="title" ref={heading} tabIndex={-1}>
             <span className="princess">Princess</span>
             <span className="skye">Skye<span className="title-period">.</span></span>
           </h1>
-          <p className="invitation" key={entered ? "welcome" : "invitation"}>{entered ? "Welcome to my world." : "Some worlds are worth surrendering to."}</p>
 
           <div className="entry-area" key={entered ? "entered" : "gate"}>
             {entered ? (
               <>
-                <p className="coming-soon">The next chapter is coming.</p>
-                <button className="back-button" onClick={() => setEntered(false)}><Arrow reverse /> Back to the entrance</button>
+                <p className="coming-soon">Coming soon.</p>
+                <button className="back-button" onClick={() => setEntered(false)}><Arrow reverse /> Back</button>
               </>
             ) : (
               <>
@@ -57,18 +53,15 @@ export default function Home() {
                   <button ref={enterButton} className="enter-button" onClick={() => setEntered(true)} aria-label="Enter — I confirm I am 18 or older"><span>ENTER</span><Arrow /></button>
                   <button className="exit-button" onClick={() => window.location.replace("about:blank")} aria-label="Exit this website"><span>EXIT</span><svg viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="m3 11 8-8M3 3h8v8" stroke="currentColor" strokeWidth="1" /></svg></button>
                 </div>
-                <p className="age-notice">By entering, you confirm that you are 18 or older.</p>
+                <p className="age-notice">By entering, you confirm you’re 18+.</p>
               </>
             )}
           </div>
         </div>
       </section>
 
-      <div className="vertical-note" aria-hidden="true">AN UNFORGETTABLE PRESENCE</div>
       <footer className="footer">
         <span>© {new Date().getFullYear()} PRINCESS SKYE</span>
-        <span className="footer-signature">Exclusively, <i>Skye.</i></span>
-        <span className="footer-right"><span className="tiny-diamond" /> {entered ? "WELCOME INSIDE" : "ADULTS ONLY · 18+"}</span>
       </footer>
     </main>
   );

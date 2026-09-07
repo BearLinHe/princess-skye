@@ -26,20 +26,14 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--gold); outline-
 .brand { display: inline-flex; align-items: center; gap: 19px; }
 .monogram { font-family: var(--font-serif); font-size: 43px; line-height: 1; width: 47px; letter-spacing: -.1em; color: var(--gold); }
 .monogram span { position: relative; top: 7px; margin-left: -7px; font-style: italic; }
-.brand-name { font-size: .75rem; font-weight: 500; letter-spacing: .23em; }
-.edition { position: absolute; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 13px; font-size: .75rem; letter-spacing: .24em; color: #d1c7b9; }
-.tiny-diamond { display: inline-block; width: 4px; height: 4px; background: var(--gold); transform: rotate(45deg); }
 .age-badge { width: 42px; height: 42px; border: 1px solid rgba(217,200,174,.44); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: .875rem; letter-spacing: -.06em; color: #e7d9c6; }
 .age-badge span { font-size: .7rem; margin-top: -8px; margin-left: 2px; }
 .hero { width: 100%; flex: 1; display: flex; align-items: center; padding: 42px 8% 66px; }
 .hero-content { width: min(590px, 100%); }
-.eyebrow { display: flex; align-items: center; gap: 16px; color: var(--gold); font-size: .75rem; letter-spacing: .26em; margin-bottom: 23px; animation: rise-in 1.1s .1s both; }
-.eyebrow > span { width: 37px; height: 1px; background: var(--gold); opacity: .7; }
 .title { font-family: var(--font-serif); font-weight: 400; margin: 0; width: fit-content; outline: none; animation: rise-in 1.3s .18s both; }
 .princess { display: block; font-size: clamp(3.5rem, 5.3vw, 5.5rem); line-height: .95; letter-spacing: -.03em; padding-left: 5px; }
 .skye { display: block; font-size: clamp(8rem, 14.6vw, 15rem); font-style: italic; line-height: .83; letter-spacing: -.065em; padding-right: 20px; }
 .title-period { color: #a74a50; margin-left: 3px; }
-.invitation { font-family: var(--font-serif); font-style: italic; font-size: clamp(1.25rem, 1.85vw, 1.7rem); color: #d2c9bc; margin: 33px 0 0; line-height: 1.5; animation: rise-in 1.2s .3s both; }
 .entry-area { margin-top: 44px; animation: rise-in 1.2s .4s both; }
 .entry-actions { display: flex; gap: 30px; align-items: center; }
 .enter-button { background: var(--red); color: var(--foreground); border: 1px solid #9b4854; padding: 0 28px; width: 213px; height: 59px; display: flex; justify-content: space-between; align-items: center; font-size: .875rem; letter-spacing: .22em; position: relative; box-shadow: inset 0 0 0 3px rgba(16,14,13,.11); transition: background .25s, border-color .25s, transform .25s, box-shadow .25s; }
@@ -52,11 +46,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--gold); outline-
 .exit-button:hover { color: #fff; }
 .exit-button:hover svg { transform: translate(2px,-2px); }
 .age-notice { margin: 17px 0 0; font-size: .75rem; color: var(--muted); line-height: 1.75; max-width: 330px; }
-.vertical-note { position: absolute; right: 4.1%; top: 45%; writing-mode: vertical-rl; color: #d6cabb; font-size: .75rem; letter-spacing: .3em; opacity: .75; }
 .footer { margin: 0 5%; border-top: 1px solid rgba(212,191,164,.2); padding: 24px 0 34px; display: flex; align-items: center; justify-content: space-between; gap: 20px; color: var(--muted); font-size: .75rem; letter-spacing: .12em; animation: fade-in 1.3s .5s both; }
-.footer-signature { font-family: var(--font-serif); font-size: 1.125rem; letter-spacing: 0; color: #cab89e; }
-.footer-signature i { font-size: 1.4rem; }
-.footer-right { display: inline-flex; align-items: center; gap: 11px; }
 .coming-soon { color: var(--muted); font-size: .875rem; line-height: 1.7; margin: 0 0 20px; }
 .back-button { display: inline-flex; align-items: center; gap: 14px; min-height: 44px; padding: 0; color: var(--gold); background: none; border: 0; font-size: .875rem; }
 .reverse { transform: rotate(180deg); width: 23px; }
@@ -69,38 +59,30 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--gold); outline-
 
 @media (min-width: 1600px) { .hero { padding-left: 10%; } .hero-content { width: 650px; } }
 @media (max-width: 900px) {
-  .edition { display: none; }
   .hero { padding-left: 8%; }
   .photo-shade { background: linear-gradient(90deg, rgba(13,12,11,.88), rgba(13,12,11,.56) 48%, rgba(13,12,11,.12)), linear-gradient(0deg,#100e0d 0%,rgba(16,14,13,.84) 12%,transparent 65%,rgba(16,14,13,.55)); }
   .photograph img { object-position: 58% center; }
-  .vertical-note { display: none; }
 }
 @media (max-width: 600px) {
   .landing { min-height: max(780px, 100svh); }
   .edge-frame { inset: 12px; }
   .masthead { margin: 0 29px; padding: 31px 0; }
   .brand { gap: 13px; }
-  .brand-name { font-size: .75rem; letter-spacing: .16em; }
   .monogram { font-size: 36px; width: 38px; }
   .age-badge { width: 36px; height: 36px; }
   .photograph { bottom: 18%; }
   .photograph img { object-position: 61% top; }
   .photo-shade { background: linear-gradient(0deg,#100e0d 0%,#100e0d 15%,rgba(16,14,13,.83) 33%,rgba(16,14,13,.25) 72%,rgba(16,14,13,.4)),linear-gradient(90deg,rgba(16,14,13,.49),transparent 90%); }
   .hero { align-items: flex-end; padding: 112px 32px 46px; }
-  .eyebrow { font-size: .75rem; letter-spacing: .18em; gap: 12px; margin-bottom: 22px; }
-  .eyebrow > span { width: 23px; }
   .princess { font-size: 3.75rem; }
   .skye { font-size: clamp(7.5rem,34vw,12rem); }
-  .invitation { font-size: 1.25rem; margin-top: 27px; max-width: 300px; }
   .entry-area { margin-top: 30px; }
   .entry-actions { gap: 23px; }
   .enter-button { width: 196px; height: 56px; }
   .age-notice { max-width: 270px; font-size: .75rem; }
   .footer { margin: 0 29px; padding: 21px 0 28px; font-size: .75rem; letter-spacing: .05em; gap: 14px; flex-wrap: wrap; }
-  .footer-signature { display: none; }
-  .footer-right { gap: 7px; }
 }
-@media (max-width: 360px) { .hero { padding-left: 26px; padding-right: 26px; } .entry-actions { gap: 13px; } .brand-name { letter-spacing: .1em; } }
+@media (max-width: 360px) { .hero { padding-left: 26px; padding-right: 26px; } .entry-actions { gap: 13px; } }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
