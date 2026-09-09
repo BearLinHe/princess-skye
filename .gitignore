@@ -6,3 +6,4 @@ out/
 !.env.example
 *.tsbuildinfo
 .DS_Store
+.skye-admin-credentials.txt

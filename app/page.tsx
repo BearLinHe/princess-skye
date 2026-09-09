@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 function Arrow({ reverse = false }: { reverse?: boolean }) {
@@ -44,13 +45,13 @@ export default function Home() {
           <div className="entry-area" key={entered ? "entered" : "gate"}>
             {entered ? (
               <>
-                <p className="coming-soon">Coming soon.</p>
+                <Link href="/games" className="enter-button" style={{ marginBottom: 20 }}>PLAYROOM <Arrow /></Link>
                 <button className="back-button" onClick={() => setEntered(false)}><Arrow reverse /> Back</button>
               </>
             ) : (
               <>
                 <div className="entry-actions">
-                  <button ref={enterButton} className="enter-button" onClick={() => setEntered(true)} aria-label="Enter — I confirm I am 18 or older"><span>ENTER</span><Arrow /></button>
+                  <button ref={enterButton} className="enter-button" onClick={() => { try { sessionStorage.setItem("skye-adult", "yes"); } catch {} setEntered(true); }} aria-label="Enter — I confirm I am 18 or older"><span>ENTER</span><Arrow /></button>
                   <button className="exit-button" onClick={() => window.location.replace("about:blank")} aria-label="Exit this website"><span>EXIT</span><svg viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="m3 11 8-8M3 3h8v8" stroke="currentColor" strokeWidth="1" /></svg></button>
                 </div>
                 <p className="age-notice">By entering, you confirm you’re 18+.</p>
