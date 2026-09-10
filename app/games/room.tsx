@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import GameLibrary from "./library";
-import { useEffect, useRef, useState } from "react";
-import { boardCoordinates, defaultOptions, defaultSpaces, destination, readConfig, wheelRotation, sectors, chooseWeighted, type Choice, type Space } from "./rules";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { BOARD_COLUMNS, BOARD_ROWS, MOBILE_BOARD_COLUMNS, MOBILE_BOARD_ROWS, boardDirection, puppyFacesRight, boardCoordinates, defaultOptions, defaultSpaces, destination, readConfig, wheelRotation, sectors, chooseWeighted, type Choice, type Space } from "./rules";
 
 const STORAGE = "skye-playroom-v1";
 const dieFaces = ["⚀", "⚁", "⚂", "⚃", "⚄", "⚅"];
@@ -83,7 +84,9 @@ export default function GameRoom() {
   }
   function resetBoard() { if (!busyRef.current) { setPosition(0); setDice(1); setEditing(false); setAnnouncement("Back at the start."); } }
   const coordinates = boardCoordinates(position);
-  const trailPoints = spaces.map((_, index) => { const cell = boardCoordinates(index); return `${cell.col * 200 + 100},${cell.row * 200 + 100}`; });
+  const mobileCoordinates = boardCoordinates(position, true);
+  const mobileTrailPoints = spaces.map((_, index) => { const cell = boardCoordinates(index, true); return `${(cell.col + .5) * 1000 / MOBILE_BOARD_COLUMNS},${(cell.row + .5) * 1000 / MOBILE_BOARD_ROWS}`; });
+  const trailPoints = spaces.map((_, index) => { const cell = boardCoordinates(index); return `${(cell.col + .5) * 1000 / BOARD_COLUMNS},${(cell.row + .5) * 1000 / BOARD_ROWS}`; });
   const slices = sectors(options);
   const gradient = slices.map((slice, i) => `${colors[i]} ${slice.start}deg ${slice.end}deg`).join(",");
 
@@ -93,16 +96,18 @@ export default function GameRoom() {
     <header className="room-header"><Link href="/" className="room-wordmark">Princess <i>Skye.</i></Link><span className="room-header-label">THE PLAYROOM</span><Link href="/" className="game-link">Leave ↗</Link></header>
     <section className="room-intro"><div><span className="room-kicker">A LITTLE LUCK. YOUR RULES.</span><h1>Shall we <i>play?</i></h1></div><div className="game-switch" aria-label="Choose a game"><button aria-pressed={game === "board"} disabled={busy} onClick={() => switchGame("board")}><span>01</span> Puppy Steps</button><button aria-pressed={game === "wheel"} disabled={busy} onClick={() => switchGame("wheel")}><span>02</span> The Wheel</button></div></section>
     <GameLibrary config={{ spaces, options }} disabled={busy || editing} dirty={dirty} onAdmin={setCanEdit} onSaved={() => setDirty(false)} onLoad={config => { setSpaces(config.spaces); setOptions(config.options); setDraft(config.spaces[0]); setOptionDraft(config.options); setPosition(0); setSelected(0); setAngle(0); setWinner(null); setEditing(false); setDirty(false); setNote(""); }} />
-    <div className="game-layout">
+    <div className={`game-layout ${game === "board" ? "board-layout" : ""}`}>
       <section className="play-surface" aria-label={game === "board" ? "Puppy Steps board" : "The Wheel"}>
         <div className="surface-heading"><div><span className="room-kicker">{game === "board" ? "01 / THE BOARD" : "02 / THE WHEEL"}</span><h2>{game === "board" ? "One little step at a time." : "Leave it to chance."}</h2></div><span className="surface-badge">{game === "board" ? "25 SPACES" : `${options.length} CHOICES`}</span></div>
         {game === "board" ? <>
-          <div className="board-frame">
+          <div className="board-frame photo-board">
+          <div className="board-photo" aria-hidden="true"><Image src="/images/skye-playroom.png" alt="" fill unoptimized /></div>
           <div className="board-caption"><span>THE PUPPY TRAIL</span><span>{String(position).padStart(2, "0")} <span className="caption-divider">/</span> 24</span></div>
           <div className="puppy-board">
-            <svg className="board-trail" viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true"><polyline points={trailPoints.join(" ")} className="trail-track" /><polyline points={trailPoints.slice(0, position + 1).join(" ")} className="trail-complete" /></svg>
-            {spaces.map((space, index) => { const cell = boardCoordinates(index); return <button key={index} style={{ gridRow: cell.row + 1, gridColumn: cell.col + 1 }} className={`board-space ${position === index ? "current" : ""} ${index < position ? "visited" : ""} ${index === 0 || index === 24 ? "endpoint" : ""} ${index === 24 ? "finish-space" : ""} ${editing && selected === index ? "selected-space" : ""}`} disabled={busy || !canEdit} onClick={() => selectSpace(index)} aria-label={`${canEdit ? "Edit space" : "Space"} ${index}: ${space.title}`} aria-current={position === index ? "step" : undefined}><span className="space-number">{String(index).padStart(2, "0")} <span>{index === 24 ? "✧" : index % 5 === 4 ? "↑" : Math.floor(index / 5) % 2 === 0 ? "→" : "←"}</span></span><span className="space-emblem" aria-hidden="true">{index === 0 ? "✧" : index === 24 ? "♛" : "◇"}</span><span className="space-title">{space.title}</span></button>; })}
-            <div className={`puppy-token ${busy ? "crawling" : ""}`} style={{ left: `${coordinates.col * 20}%`, top: `${coordinates.row * 20}%` }} aria-hidden="true"><span style={{ transform: Math.floor(position / 5) % 2 === 0 ? "scaleX(-1)" : undefined }}>🐕</span></div>
+            <svg className="board-trail desktop-trail" viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true"><polyline points={trailPoints.join(" ")} className="trail-track" /><polyline points={trailPoints.slice(0, position + 1).join(" ")} className="trail-complete" /></svg>
+            <svg className="board-trail mobile-trail" viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true"><polyline points={mobileTrailPoints.join(" ")} className="trail-track" /><polyline points={mobileTrailPoints.slice(0, position + 1).join(" ")} className="trail-complete" /></svg>
+            {spaces.map((space, index) => { const cell = boardCoordinates(index); const mobileCell = boardCoordinates(index, true); return <button key={index} style={{ "--cell-row": cell.row + 1, "--cell-col": cell.col + 1, "--mobile-row": mobileCell.row + 1, "--mobile-col": mobileCell.col + 1 } as CSSProperties} className={`board-space ${/^Space \d+$/.test(space.title) ? "untitled-space" : ""} ${position === index ? "current" : ""} ${index < position ? "visited" : ""} ${index === 0 || index === 24 ? "endpoint" : ""} ${index === 24 ? "finish-space" : ""} ${editing && selected === index ? "selected-space" : ""}`} disabled={busy || !canEdit} onClick={() => selectSpace(index)} aria-label={`${canEdit ? "Edit space" : "Space"} ${index}: ${space.title}`} aria-current={position === index ? "step" : undefined}><span className="space-number">{String(index).padStart(2, "0")} <span className="desktop-direction">{boardDirection(index)}</span><span className="mobile-direction">{boardDirection(index, true)}</span></span><span className="space-emblem" aria-hidden="true">{index === 0 ? "✧" : index === 24 ? "♛" : "◇"}</span><span className="space-title">{space.title}</span></button>; })}
+            <div className={`puppy-token ${busy ? "crawling" : ""}`} style={{ "--token-left": `${coordinates.col * 100 / BOARD_COLUMNS}%`, "--token-top": `${coordinates.row * 100 / BOARD_ROWS}%`, "--mobile-left": `${mobileCoordinates.col * 100 / MOBILE_BOARD_COLUMNS}%`, "--mobile-top": `${mobileCoordinates.row * 100 / MOBILE_BOARD_ROWS}%`, "--face": puppyFacesRight(position) ? -1 : 1, "--mobile-face": puppyFacesRight(position, true) ? -1 : 1 } as CSSProperties} aria-hidden="true"><span>🐕</span></div>
           </div>
           </div>
           <div className="surface-bottom"><span>{canEdit ? "Click any space to edit your draft." : "Roll the dice and follow the trail."}</span><span>START → FINISH</span></div>

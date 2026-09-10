@@ -28,7 +28,7 @@ The homepage provides an explicit 18+ self-declaration and a Playroom link. The 
 
 ### Puppy Steps
 
-A 25-space serpentine board with a dog token. A six-sided die advances the dog one space at a time. Rolls beyond the finish stop at space 24. Click any space to edit its title (28 characters) and instruction (400 characters), then save. Start again resets the game position while preserving custom content.
+A 25-space inward-turning trail on a landscape, nine-column board with a dog token and Skye’s supplied photo under translucent spaces. Existing space IDs and saved instructions are preserved. A six-sided die advances the dog one space at a time. Rolls beyond the finish stop at space 24. Click any space to edit its title (28 characters) and instruction (400 characters), then save. Start again resets the game position while preserving custom content.
 
 ### The Wheel
 

@@ -6,9 +6,39 @@ export const defaultSpaces: Space[] = Array.from({ length: SPACE_COUNT }, (_, i)
 }));
 export type Choice = { label: string; weight: number };
 export const defaultOptions: Choice[] = [1, 2, 3, 4, 2, 3, 1, 4].map((weight, i) => ({ label: `Your choice ${i + 1}`, weight }));
-export function boardCoordinates(index: number) {
-  const row = Math.floor(index / 5);
-  return { row: 4 - row, col: row % 2 === 0 ? index % 5 : 4 - index % 5 };
+export const BOARD_COLUMNS = 9;
+export const BOARD_ROWS = 5;
+export const MOBILE_BOARD_COLUMNS = 5;
+export const MOBILE_BOARD_ROWS = 7;
+// 25 existing spaces keep their IDs and saved content along an inward-turning trail.
+const trail: [number, number][] = [
+  [4,0],[4,1],[4,2],[4,3],[4,4],[4,5],[4,6],[4,7],[4,8],
+  [3,8],[2,8],[1,8],[0,8],
+  [0,7],[0,6],[0,5],[0,4],[0,3],[0,2],[0,1],[0,0],
+  [1,0],[2,0],[2,1],[2,2],
+];
+const mobileTrail: [number, number][] = [
+  [6,0],[6,1],[6,2],[6,3],[6,4],
+  [5,4],[4,4],[3,4],[2,4],[1,4],[0,4],
+  [0,3],[0,2],[0,1],[0,0],
+  [1,0],[2,0],[3,0],[4,0],
+  [4,1],[4,2],[4,3],[3,3],[2,3],[2,2],
+];
+export function boardCoordinates(index: number, mobile = false) {
+  const [row, col] = (mobile ? mobileTrail : trail)[index];
+  return { row, col };
+}
+export function boardDirection(index: number, mobile = false) {
+  if (index === SPACE_COUNT - 1) return "✧";
+  const here = boardCoordinates(index, mobile), next = boardCoordinates(index + 1, mobile);
+  return next.col > here.col ? "→" : next.col < here.col ? "←" : next.row > here.row ? "↓" : "↑";
+}
+export function puppyFacesRight(index: number, mobile = false) {
+  for (let i = Math.min(index, SPACE_COUNT - 2); i >= 0; i--) {
+    const direction = boardDirection(i, mobile);
+    if (direction === "→" || direction === "←") return direction === "→";
+  }
+  return true;
 }
 export function destination(position: number, dice: number) { return Math.min(SPACE_COUNT - 1, position + dice); }
 export function sectors(options: Choice[]) {
