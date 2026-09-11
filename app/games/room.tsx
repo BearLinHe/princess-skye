@@ -105,10 +105,10 @@ export default function GameRoom() {
     <div className="playroom-photo" aria-hidden="true"><Image src="/images/skye-playroom.png" alt="" fill unoptimized /></div>
     <header className="playroom-nav">
       <Link href="/" className="room-wordmark">Princess <i>Skye.</i></Link>
+<div className="game-switch visible-game-switch" aria-label="Choose a game"><button aria-pressed={game === "board"} disabled={busy || editing} onClick={() => switchGame("board")}>Puppy Steps</button><button aria-pressed={game === "wheel"} disabled={busy || editing} onClick={() => switchGame("wheel")}>The Wheel</button></div>
       <details className="playroom-menu" ref={menu}>
         <summary aria-label="Open game menu">{dirty ? <span className="unsaved-dot" aria-label="Unsaved changes" /> : null}<span aria-hidden="true">☰</span></summary>
         <div className="menu-content">
-          <div className="game-switch" aria-label="Choose a game"><button aria-pressed={game === "board"} disabled={busy || editing} onClick={() => switchGame("board")}>Puppy Steps</button><button aria-pressed={game === "wheel"} disabled={busy || editing} onClick={() => switchGame("wheel")}>The Wheel</button></div>
     <GameLibrary config={{ spaces, options }} disabled={busy || editing} dirty={dirty} onAdmin={setCanEdit} onSaved={() => setDirty(false)} onLoad={config => { setSpaces(config.spaces); setOptions(config.options); setDraft(config.spaces[0]); setOptionDraft(config.options); setPosition(0); setPreview(null); setSelected(0); setAngle(0); setWinner(null); setEditing(false); setDirty(false); setNote(""); }} />
           {canEdit && game === "wheel" && <button className="game-secondary" disabled={busy} onClick={() => { setOptionDraft(options.map(o => ({ ...o }))); setEditing(true); }}>Edit choices</button>}
           <Link href="/" className="game-link">Leave ↗</Link>
