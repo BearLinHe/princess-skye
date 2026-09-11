@@ -1,0 +1,73 @@
+/* The photograph is the room; only the game pieces sit above it. */
+.room.immersive-room {
+  position:relative; isolation:isolate; min-height:100svh; padding:0 clamp(18px,4vw,72px);
+  display:flex; flex-direction:column; background:#171315;
+}
+.playroom-photo { position:fixed; inset:0; z-index:-2; pointer-events:none; background:#171315; }
+.playroom-photo img { object-fit:cover; object-position:50% 48%; opacity:.65; }
+.playroom-nav { display:flex; align-items:center; justify-content:space-between; min-height:84px; gap:24px; }
+.playroom-nav .room-wordmark { font-size:1.8rem; text-shadow:0 2px 12px #0008; }
+.playroom-menu { position:relative; z-index:10; }
+.playroom-menu summary { list-style:none; cursor:pointer; min-width:48px; min-height:48px; display:flex; justify-content:center; align-items:center; gap:8px; color:#fff0d9; font-size:1.35rem; border-radius:50%; background:#19121b70; }
+.playroom-menu summary::-webkit-details-marker { display:none; }
+.unsaved-dot { width:6px; height:6px; border-radius:50%; background:#f3c875; }
+.menu-content { position:absolute; right:0; top:58px; width:min(440px,calc(100vw - 36px)); max-height:calc(100svh - 110px); overflow:auto; padding:22px; background:#231c24fa; border:1px solid #c9b09045; border-radius:18px; box-shadow:0 20px 60px #0007; }
+.immersive-room .game-library { width:100%; padding:20px 0 4px; border:0; margin:0; background:none; }
+.menu-content .library-controls { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); }
+.menu-content .library-picker,.menu-content .library-name { grid-column:1 / -1; min-width:0; }
+.menu-content .library-title { flex-wrap:wrap; gap:8px; }
+.menu-content .library-controls button { width:100%; margin:0; min-width:0; padding:12px 8px; }
+.menu-content .game-switch { display:flex; width:100%; border-radius:8px; overflow:hidden; }
+.menu-content .game-switch button { flex:1; min-width:0; padding:12px 8px; }
+.menu-content .library-tools { flex-wrap:wrap; gap:4px 16px; }
+.immersive-room .immersive-stage { width:100%; max-width:1720px; margin:auto; padding:0; border:0; border-radius:0; background:none; box-shadow:none; overflow:visible; }
+.immersive-room .puppy-board { height:clamp(380px,calc(100svh - 270px),780px); }
+.immersive-room .board-space { max-width:112px; max-height:96px; border-radius:12px; background:#ead9b9d9; color:#362817; border-color:#fff0d775; box-shadow:0 5px 16px #0003; }
+.immersive-room .board-space:nth-of-type(even) { background:#582b40d9; color:#fff1e7; }
+.immersive-room .board-space.visited:not(.endpoint) { background:#ead9b9d9; color:#362817; }
+.immersive-room .board-space.visited:nth-of-type(even):not(.endpoint) { background:#582b40d9; color:#fff1e7; }
+.immersive-room .board-space.current { box-shadow:0 0 0 2px #fff0b8,0 4px 24px #0004; }
+.immersive-room .space-title { font-size:.875rem; line-height:1.3; -webkit-line-clamp:3; display:-webkit-box; }
+.immersive-room .untitled-space .space-title { display:-webkit-box; }
+.immersive-room .space-emblem,.immersive-room .untitled-space .space-emblem { display:none; }
+.immersive-room .space-number { font-size:.625rem; opacity:.8; }
+.immersive-room .trail-track { stroke:#ffedc5b3; stroke-width:1.5; }
+.immersive-room .trail-complete { stroke:#ffdfa6; stroke-width:2; filter:none; }
+.play-dock { width:min(840px,100%); margin:22px auto 0; padding:20px 0 max(24px,env(safe-area-inset-bottom)); display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:16px 32px; color:#fff4e4; text-shadow:0 2px 8px #000; }
+.dock-instruction { min-width:0; max-height:180px; overflow:auto; overflow-wrap:anywhere; }
+.dock-instruction h2 { font-family:var(--font-serif); font-weight:400; font-size:1.7rem; margin:0 0 4px; }
+.dock-instruction p { font-size:1rem; line-height:1.6; margin:0; white-space:pre-wrap; }
+.dock-label { font-size:.625rem; letter-spacing:.16em; color:#f0d3a1; }
+.dock-label:empty { display:none; }
+.dock-actions { display:flex; align-items:center; gap:14px; }
+.dock-die { width:54px; height:54px; border-radius:12px; display:grid; place-items:center; background:#eddfc5; color:#59263a; box-shadow:0 4px 0 #b49a79,0 5px 16px #0003; text-shadow:none; }
+.dock-die span { font-family:serif; font-size:3rem; line-height:1; }
+.immersive-room .roll-button { width:140px; min-height:54px; border-radius:28px; background:#923350; border-color:#db859d; padding:14px 22px; }
+.reset-button { min-width:44px; min-height:44px; border:0; background:#20172070; border-radius:50%; color:#ffe9c9; font-size:1.5rem; }
+.draft-shortcut { grid-column:1 / -1; justify-self:end; background:#251823dd; color:#ffe1a2; border:0; padding:10px 16px; border-radius:20px; font-size:.75rem; }
+.immersive-room .space-dialog { width:min(520px,calc(100vw - 32px)); max-height:85svh; overflow:auto; margin:auto; padding:28px; border:1px solid #a88a6d80; border-radius:20px; background:#251f28; color:#fff0df; box-shadow:0 30px 100px #0008; }
+.space-dialog::backdrop { background:#100c10a8; }
+.immersive-room :is(button,summary,a):focus-visible { outline:2px solid #ffe4ad; outline-offset:4px; }
+.immersive-wheel { display:grid; place-items:center; }
+.immersive-room .wheel-stage { width:min(68svh,620px,85vw); margin:16px auto; }
+@media(max-width:650px) {
+  .room.immersive-room { padding-inline:12px; }
+  .playroom-nav { min-height:70px; }
+  .playroom-nav .room-wordmark { font-size:1.5rem; }
+  .playroom-photo img { object-position:55% center; }
+  .immersive-room .immersive-stage { max-width:480px; }
+  .immersive-room .puppy-board { height:auto; aspect-ratio:5 / 6; }
+  .immersive-room .board-space { width:calc(100% - 10px); height:calc(100% - 10px); padding:6px; border-radius:9px; }
+  .immersive-room .space-title { font-size:.75rem; line-height:1.2; -webkit-line-clamp:2; }
+  .immersive-room .space-number { font-size:.5625rem; }
+  .play-dock { width:100%; margin-top:12px; grid-template-columns:1fr; gap:18px; padding:12px 10px max(24px,env(safe-area-inset-bottom)); }
+  .dock-instruction { text-align:center; max-height:160px; }
+  .dock-instruction h2 { font-size:1.4rem; }
+  .dock-instruction p { font-size:.9375rem; }
+  .dock-actions { justify-content:center; }
+  .immersive-room .roll-button { width:160px; }
+  .draft-shortcut { justify-self:center; }
+  .menu-content { right:0; padding:18px; }
+  .immersive-room .space-dialog { padding:22px 18px; }
+}
+@media(prefers-reduced-motion:reduce) { .immersive-room .puppy-token { transition:none; } }
