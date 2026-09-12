@@ -79,3 +79,36 @@
   .immersive-room .space-dialog { padding:22px 18px; }
 }
 @media(prefers-reduced-motion:reduce) { .immersive-room .puppy-token { transition:none; } }
+
+/* Short exit, then a softer staggered reveal. The photo stays stationary. */
+.immersive-room .immersive-stage { min-height:clamp(380px,calc(100svh - 270px),780px); }
+.visible-game-switch { position:relative; isolation:isolate; gap:0; }
+.visible-game-switch::before { content:""; position:absolute; z-index:-1; top:4px; bottom:4px; left:4px; width:calc((100% - 8px) / 2); border-radius:22px; background:linear-gradient(120deg,#a3395a,#7e304c); box-shadow:inset 0 1px #efabc33d,0 3px 12px #0003; transition:transform 480ms cubic-bezier(.22,1,.36,1); }
+[data-game="wheel"] .visible-game-switch::before { transform:translateX(100%); }
+.immersive-room .visible-game-switch button { flex:1; background:transparent; transition:color 240ms; }
+.immersive-room .visible-game-switch button[aria-pressed="true"] { background:transparent; color:#fff5e6; }
+.immersive-room .visible-game-switch button:disabled { cursor:default; }
+.transition-leaving .immersive-stage { animation:game-depart 180ms ease-in both; pointer-events:none; }
+.transition-leaving .play-dock { animation:dock-depart 180ms ease-in both; pointer-events:none; }
+.transition-entering .immersive-stage { animation:game-arrive 560ms cubic-bezier(.22,1,.36,1) both; }
+.transition-entering .board-space { animation:tile-arrive 480ms cubic-bezier(.22,1,.36,1) both; animation-delay:var(--reveal-delay,0ms); }
+.transition-entering .board-trail { animation:trail-arrive 650ms ease-out both; }
+.transition-entering .wheel-stage { animation:wheel-arrive 680ms cubic-bezier(.22,1,.36,1) both; }
+.transition-entering .play-dock { animation:dock-arrive 480ms 100ms cubic-bezier(.22,1,.36,1) both; }
+@keyframes game-depart { to { opacity:0; transform:translateY(8px) scale(.975); } }
+@keyframes game-arrive { from { opacity:0; transform:translateY(14px) scale(.97); } to { opacity:1; transform:none; } }
+@keyframes tile-arrive { from { opacity:0; translate:0 10px; } to { opacity:1; translate:0 0; } }
+@keyframes trail-arrive { from { opacity:0; } to { opacity:1; } }
+@keyframes wheel-arrive { from { opacity:0; transform:scale(.92) rotate(-7deg); } to { opacity:1; transform:none; } }
+@keyframes dock-depart { to { opacity:0; transform:translateY(5px); } }
+@keyframes dock-arrive { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
+@media(max-width:650px) {
+  .immersive-room .immersive-stage { min-height:min(calc((100vw - 24px) * 1.2),576px); }
+}
+@media(prefers-reduced-motion:reduce) {
+  .immersive-room .visible-game-switch::before { transition:none; }
+  .immersive-room :is(.immersive-stage,.board-space,.board-trail,.wheel-stage,.play-dock) { animation:none; }
+}
+
+.immersive-room .wheel-stage { width:min(clamp(300px,calc(100svh - 302px),620px),85vw); }
+@media(max-width:650px) { .immersive-room .wheel-stage { width:min(85vw,430px); } }
