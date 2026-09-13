@@ -3,6 +3,7 @@ import "@fontsource/cormorant-garamond/400.css";
 import "@fontsource/cormorant-garamond/400-italic.css";
 import "@fontsource/manrope/400.css";
 import "./globals.css";
+import { RouteTransition } from "./components/route-transition";
 
 export const metadata: Metadata = {
   title: "Princess Skye",
@@ -13,5 +14,5 @@ export const metadata: Metadata = {
 export const viewport: Viewport = { themeColor: "#100e0d", colorScheme: "dark" };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="en"><body>{children}</body></html>;
+  return <html lang="en"><body><RouteTransition>{children}</RouteTransition></body></html>;
 }

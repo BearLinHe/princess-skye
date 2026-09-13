@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { TransitionLink as Link } from "../components/route-transition";
 import Image from "next/image";
 import GameLibrary from "./library";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
