@@ -7,8 +7,12 @@ import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { BOARD_COLUMNS, BOARD_ROWS, MOBILE_BOARD_COLUMNS, MOBILE_BOARD_ROWS, boardDirection, puppyFacesRight, boardCoordinates, defaultOptions, defaultSpaces, destination, readConfig, wheelRotation, sectors, chooseWeighted, type Choice, type Space } from "./rules";
 
 const STORAGE = "skye-playroom-v1";
-const dieFaces = ["⚀", "⚁", "⚂", "⚃", "⚄", "⚅"];
-const colors = ["#752637", "#302b29", "#98764e", "#463335", "#621e30", "#4c4540", "#866549", "#352a31", "#773d47", "#4b3c31", "#9b7c58", "#542c37"];
+function DiceFace({ value }: { value: number }) {
+  const points = [[24,24],[12,12],[36,36],[12,36],[36,12],[12,24],[36,24]];
+  const faces = [[0],[1,2],[1,0,2],[1,2,3,4],[1,2,3,4,0],[1,2,3,4,5,6]];
+  return <svg viewBox="0 0 48 48" aria-hidden="true">{faces[value - 1].map(i => <circle key={i} cx={points[i][0]} cy={points[i][1]} r="3.1" fill="currentColor" />)}</svg>;
+}
+const colors = ["#632b3c", "#30282a", "#877366", "#453037", "#542235", "#4b4140", "#79665b", "#32242b", "#704252", "#4e3b36", "#907b68", "#422b35"];
 
 export default function GameRoom() {
   const [access, setAccess] = useState<boolean | null>(null);
@@ -106,10 +110,10 @@ export default function GameRoom() {
   return <main className="room immersive-room" data-game={game}>
     <div className="playroom-photo" aria-hidden="true"><Image src="/images/skye-playroom.png" alt="" fill unoptimized /></div>
     <header className="playroom-nav">
-      <Link href="/" className="room-wordmark">Princess <i>Skye.</i></Link>
+      <Link href="/" className="room-wordmark"><span>Princess</span><i>Skye.</i></Link>
 <div className="game-switch visible-game-switch" aria-label="Choose a game"><button aria-pressed={game === "board"} disabled={busy || editing} onClick={() => switchGame("board")}>Puppy Steps</button><button aria-pressed={game === "wheel"} disabled={busy || editing} onClick={() => switchGame("wheel")}>The Wheel</button></div>
       <details className="playroom-menu" ref={menu}>
-        <summary aria-label="Open game menu">{dirty ? <span className="unsaved-dot" aria-label="Unsaved changes" /> : null}<span aria-hidden="true">☰</span></summary>
+        <summary aria-label="Open game menu">{dirty ? <span className="unsaved-dot" aria-label="Unsaved changes" /> : null}<svg className="menu-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 8h16M4 16h16" stroke="currentColor" strokeWidth="1.2" /></svg></summary>
         <div className="menu-content">
     <GameLibrary config={{ spaces, options }} disabled={busy || editing} dirty={dirty} onAdmin={setCanEdit} onSaved={() => setDirty(false)} onLoad={config => { setSpaces(config.spaces); setOptions(config.options); setDraft(config.spaces[0]); setOptionDraft(config.options); setPosition(0); setPreview(null); setSelected(0); setAngle(0); setWinner(null); setEditing(false); setDirty(false); setNote(""); }} />
           {canEdit && game === "wheel" && <button className="game-secondary" disabled={busy} onClick={() => { setOptionDraft(options.map(o => ({ ...o }))); setEditing(true); }}>Edit choices</button>}
@@ -129,11 +133,11 @@ export default function GameRoom() {
       <section className={`scene-layer immersive-wheel ${game === "wheel" ? "scene-active" : ""}`} aria-label="The Wheel" aria-hidden={game !== "wheel"} inert={game !== "wheel"}><div className="wheel-stage"><div className="wheel-pointer" aria-hidden="true" /><div className="prize-wheel" style={{ background: `conic-gradient(${gradient})`, transform: `rotate(${angle}deg)` }} aria-hidden="true">{options.map((option, i) => <div className="wheel-label" key={i} style={{ transform: `rotate(${slices[i].center}deg)` }}><span>{slices[i].percent >= 8 ? option.label.slice(0, 20) : i + 1}</span></div>)}</div><div className="wheel-center" aria-hidden="true">S<span>✧</span></div></div></section>
     </div>
     <section className="play-dock" aria-label="Game controls">
-      <div className="dock-instruction" aria-live="polite">
+      <div key={game} className="dock-instruction" aria-live="polite">
         {game === "board" ? <><span className="dock-label">{preview !== null && preview !== position ? `SPACE ${String(preview).padStart(2, "0")}` : position === 24 ? "FINISH" : ""}</span>{!/^Space \d+$/.test(shownSpace.title) && <h2>{shownSpace.title}</h2>}<p>{shownSpace.content === "Add your own instruction here." ? "" : shownSpace.content}</p>{preview !== null && preview !== position && <button className="game-link" onClick={() => setPreview(null)}>Back to current space</button>}</> : <><h2>{winner || "The Wheel"}</h2>{busy && <p>Spinning…</p>}</>}
       </div>
       <div className="dock-actions">
-        {game === "board" && <div className={`dock-die ${busy ? "rolling" : ""}`} aria-label={`Dice: ${dice}`}><span aria-hidden="true">{dieFaces[dice - 1]}</span></div>}
+        {game === "board" && <div className={`dock-die ${busy ? "rolling" : ""}`} aria-label={`Dice: ${dice}`}><DiceFace value={dice} /></div>}
         <button className="game-primary roll-button" disabled={busy} onClick={game === "board" ? position === 24 ? resetBoard : roll : spin}>{busy ? "…" : game === "board" ? position === 24 ? "Play again" : "Roll" : "Spin"}<span aria-hidden="true">↗</span></button>
         {game === "board" && <button className="reset-button" aria-label="Start again" title="Start again" disabled={busy} onClick={resetBoard}>↺</button>}
       </div>

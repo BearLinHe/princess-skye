@@ -86,3 +86,14 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--gold); outline-
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
+
+/* Shared editorial palette and motion, used by the entrance and playroom. */
+:root { --ivory:#f4eee5; --champagne:#d8c5aa; --oxblood:#642b3d; --ink:#211b1e; --ease-luxe:cubic-bezier(.16,1,.3,1); --ease-soft:cubic-bezier(.4,0,.2,1); }
+.landing .edge-frame { display:none; }
+.landing .masthead { padding-block:30px; }
+.landing .enter-button { border-radius:3px; background:#642b3de8; border-color:#c7a49870; box-shadow:none; height:58px; font-size:.6875rem; letter-spacing:.18em; transition:background 240ms,transform 420ms var(--ease-luxe); }
+.landing .enter-button:hover { background:#7a354c; box-shadow:none; }
+.landing .entry-area { animation:editorial-arrive 700ms var(--ease-luxe) both; }
+.landing .age-badge { border:0; font-size:.6875rem; letter-spacing:.08em; }
+.landing .footer { border:0; font-size:.625rem; letter-spacing:.16em; }
+@keyframes editorial-arrive { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:none; } }
