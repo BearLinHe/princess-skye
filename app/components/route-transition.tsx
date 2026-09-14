@@ -13,6 +13,7 @@ export function RouteTransition({ children }: { children: ReactNode }) {
   const locked = useRef(false);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
   const previous = useRef(pathname);
+  const focusDestination = useRef(false);
   const clearTimers = useCallback(() => { timers.current.forEach(clearTimeout); timers.current = []; }, []);
   useEffect(() => clearTimers, [clearTimers]);
 
@@ -22,7 +23,7 @@ export function RouteTransition({ children }: { children: ReactNode }) {
     locked.current = true;
     setPhase("cover");
     router.prefetch(href);
-    timers.current.push(setTimeout(() => router.push(href), 480));
+    timers.current.push(setTimeout(() => router.push(href), 380));
     // Never leave the interface blocked if a route fails to load.
     timers.current.push(setTimeout(() => { setPhase("idle"); locked.current = false; }, 8000));
   }, [pathname, router]);
@@ -35,14 +36,20 @@ export function RouteTransition({ children }: { children: ReactNode }) {
     timers.current.push(setTimeout(() => setPhase("reveal"), 80));
     timers.current.push(setTimeout(() => {
       setPhase("idle"); locked.current = false;
-      const main = document.querySelector("main");
-      main?.setAttribute("tabindex", "-1");
-      main?.focus({ preventScroll: true });
-    }, 850));
+      focusDestination.current = true;
+    }, 700));
   }, [pathname, clearTimers]);
 
+  useEffect(() => {
+    if (phase !== "idle" || !focusDestination.current) return;
+    focusDestination.current = false;
+    const main = document.querySelector("main");
+    main?.setAttribute("tabindex", "-1");
+    main?.focus({ preventScroll: true });
+  }, [phase]);
+
   return <Navigation.Provider value={navigate}>
-    {children}
+    <div className="route-content" inert={phase !== "idle"}>{children}</div>
     <div className={`route-curtain route-${phase}`} aria-hidden="true"><div className="curtain-brand"><span>PRINCESS</span><i>Skye.</i></div></div>
     <span className="navigation-status" role="status">{phase === "cover" ? "Opening…" : ""}</span>
   </Navigation.Provider>;

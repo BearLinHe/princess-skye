@@ -1,18 +1,19 @@
-/* A light editorial masthead above a full-bleed photographic game stage. */
-.room.immersive-room { --gutter:clamp(18px,3.6vw,64px); --scene-height:clamp(390px,calc(100svh - 290px),760px); position:relative; isolation:isolate; display:flex; flex-direction:column; min-height:100svh; padding:0 var(--gutter); background:#211b1e; }
+/* The campaign photograph continues behind an unobtrusive, always-visible navigation. */
+.room.immersive-room { --gutter:clamp(18px,3.6vw,64px); --scene-height:clamp(390px,calc(100svh - 250px),760px); position:relative; isolation:isolate; display:flex; flex-direction:column; min-height:100svh; padding:0 var(--gutter); background:#211b1e; }
 .playroom-photo { position:fixed; inset:0; z-index:-2; pointer-events:none; background:#211b1e; }
-.playroom-photo img { object-fit:cover; object-position:50% 48%; opacity:.76; }
-.playroom-nav { position:relative; z-index:10; display:grid; grid-template-columns:1fr auto 1fr; grid-template-rows:78px 46px; align-items:center; gap:0; margin:0 calc(-1 * var(--gutter)) 20px; padding:0 var(--gutter); background:#f4f0e9; color:#292024; box-shadow:0 1px #2e202320; }
-.playroom-nav .room-wordmark { grid-column:2; grid-row:1; justify-self:center; display:flex; align-items:center; gap:12px; font-family:var(--font-serif); line-height:1; text-shadow:none; }
-.playroom-nav .room-wordmark>span { font-family:var(--font-sans); text-transform:uppercase; font-size:.55rem; letter-spacing:.23em; color:#58434a; }
-.playroom-nav .room-wordmark>i { font-size:3rem; font-style:normal; color:#36202a; }
-.immersive-room .visible-game-switch { grid-column:2; grid-row:2; position:relative; display:flex; justify-self:center; gap:0; padding:0; border:0; border-radius:0; background:none; isolation:isolate; }
-.immersive-room .visible-game-switch::before { content:""; position:absolute; bottom:0; left:0; height:2px; width:50%; background:#60283e; transition:transform 720ms var(--ease-luxe); }
+.playroom-photo img { object-fit:cover; object-position:50% 48%; opacity:.85; }
+.playroom-photo::after { content:""; position:absolute; inset:0; background:linear-gradient(180deg,#1d111baa,transparent 32%),linear-gradient(0deg,#1d111bdd,transparent 55%); }
+.playroom-nav { position:relative; z-index:10; display:grid; grid-template-columns:1fr auto 1fr; grid-template-rows:92px; align-items:center; margin:0 0 24px; padding:0; background:none; color:#f7efe4; border-bottom:1px solid #fff1df38; box-shadow:none; }
+.playroom-nav .room-wordmark { grid-column:1; grid-row:1; justify-self:start; display:flex; align-items:center; gap:10px; font-family:var(--font-serif); line-height:1; text-shadow:0 2px 16px #0003; }
+.playroom-nav .room-wordmark>span { font-family:var(--font-sans); text-transform:uppercase; font-size:.5625rem; letter-spacing:.2em; color:#f7efe4; }
+.playroom-nav .room-wordmark>i { font-size:2.5rem; font-style:normal; letter-spacing:-.04em; color:#f7efe4; }
+.immersive-room .visible-game-switch { grid-column:2; grid-row:1; position:relative; display:flex; justify-self:center; gap:0; padding:4px; border:1px solid #fff0dd66; border-radius:32px; background:#24151c65; isolation:isolate; }
+.immersive-room .visible-game-switch::before { content:""; position:absolute; inset:4px auto 4px 4px; width:calc(50% - 4px); border-radius:28px; background:#f4eee5; transition:transform 580ms var(--ease-luxe); }
 [data-game="wheel"] .visible-game-switch::before { transform:translateX(100%); }
-.immersive-room .visible-game-switch button { flex:1; min-width:160px; min-height:46px; padding:12px 24px; border:0; border-radius:0; background:none; color:#74646a; font-size:.6875rem; letter-spacing:.09em; transition:color 200ms; }
+.immersive-room .visible-game-switch button { position:relative; z-index:1; flex:1; min-width:148px; min-height:42px; padding:12px 20px; border:0; border-radius:0; background:none; color:#f5e9dc; font-size:.6875rem; letter-spacing:.06em; transition:color 200ms; }
 .immersive-room .visible-game-switch button[aria-pressed="true"] { background:none; color:#4b1d30; }
 .playroom-nav .playroom-menu { grid-column:3; grid-row:1; justify-self:end; position:relative; }
-.playroom-menu summary { display:flex; justify-content:center; align-items:center; gap:7px; min-width:46px; min-height:46px; list-style:none; cursor:pointer; border:1px solid #4b273126; border-radius:50%; background:none; color:#4a3039; }
+.playroom-menu summary { display:flex; justify-content:center; align-items:center; gap:7px; min-width:46px; min-height:46px; list-style:none; cursor:pointer; border:1px solid #fff0dd66; border-radius:50%; background:#24151c65; color:#f7efe4; }
 .playroom-menu summary::-webkit-details-marker { display:none; }
 .menu-icon { width:22px; height:22px; transition:transform 420ms var(--ease-luxe); }
 .playroom-menu[open] .menu-icon { transform:rotate(90deg); }
@@ -25,13 +26,13 @@
 .menu-content .library-title { flex-wrap:wrap; gap:8px; }
 .menu-content .library-controls button { width:100%; margin:0; min-width:0; padding:12px 8px; }
 .menu-content .library-tools { flex-wrap:wrap; gap:4px 16px; }
-/* Persistent panels move together like a product carousel, without ghosting. */
+/* Keep both games mounted so switching preserves each game's state. */
 .immersive-room .scene-stack { display:grid; width:100%; max-width:1720px; min-height:var(--scene-height); margin:auto; padding:0; border:0; background:none; overflow:clip; }
-.immersive-room .scene-layer { grid-area:1/1; align-self:center; min-width:0; width:100%; padding:0; border:0; border-radius:0; background:none; box-shadow:none; opacity:1; visibility:hidden; pointer-events:none; transform:translate3d(-104%,0,0); transition:transform 760ms cubic-bezier(.22,.8,.22,1),visibility 0s 760ms; }
-.immersive-room .scene-layer.immersive-wheel { display:grid; place-items:center; transform:translate3d(104%,0,0); }
-.immersive-room .scene-layer.scene-active { visibility:visible; pointer-events:auto; transform:translate3d(0,0,0); transition-delay:0s; }
+.immersive-room .scene-layer { grid-area:1/1; align-self:center; min-width:0; width:100%; padding:0; border:0; border-radius:0; background:none; box-shadow:none; opacity:0; visibility:hidden; pointer-events:none; transform:translate3d(0,-12px,0) scale(.985); transition:opacity 240ms ease,transform 580ms var(--ease-luxe),visibility 0s 580ms; }
+.immersive-room .scene-layer.immersive-wheel { display:grid; place-items:center; transform:translate3d(0,12px,0) scale(.985); }
+.immersive-room .scene-layer.scene-active { visibility:visible; pointer-events:auto; opacity:1; transform:translate3d(0,0,0) scale(1); transition:opacity 480ms 120ms ease,transform 720ms var(--ease-luxe),visibility 0s; }
 .immersive-room .puppy-board { height:var(--scene-height); }
-.immersive-room .board-space { width:calc(100% - 16px); max-width:112px; height:calc(100% - 14px); max-height:94px; padding:10px; border-radius:15px; background:#f1e9dcdf; border:1px solid #fff5e8b0; color:#382a2d; box-shadow:inset 0 1px #fff9f0,0 6px 18px #0002; transition:transform 300ms var(--ease-luxe),background 180ms; }
+.immersive-room .board-space { width:calc(100% - 16px); max-width:112px; height:calc(100% - 14px); max-height:94px; padding:10px; border-radius:8px; background:#f1e9dcdf; border:1px solid #fff5e8b0; color:#382a2d; box-shadow:inset 0 1px #fff9f0,0 6px 18px #0002; transition:transform 300ms var(--ease-luxe),background 180ms; }
 .immersive-room .board-space:nth-of-type(even),.immersive-room .board-space.visited:nth-of-type(even):not(.endpoint) { background:#573040e6; border-color:#d2acb65c; color:#fff4e8; box-shadow:inset 0 1px #ffffff14,0 6px 18px #0002; }
 .immersive-room .board-space.visited:not(.endpoint) { background:#f1e9dcdf; color:#382a2d; border-color:#e9d6b7; }
 .immersive-room .board-space.endpoint { background:#5a233ae8; color:#fff2e4; border-color:#d8b0b8; }
@@ -64,19 +65,18 @@
 .immersive-room .space-dialog { width:min(520px,calc(100vw - 32px)); max-height:85svh; overflow:auto; margin:auto; padding:28px; border:1px solid #a88a6d80; border-radius:16px; background:#251f28; color:#fff0df; box-shadow:0 30px 100px #0008; }
 .space-dialog::backdrop { background:#100c10a8; }
 .immersive-room :is(button,summary,a):focus-visible { outline:2px solid #cda97f; outline-offset:4px; }
-@media(max-width:650px) {
-  .room.immersive-room { --gutter:12px; --scene-height:min(calc((100vw - 24px) * 1.2),576px); }
-  .playroom-nav { grid-template-columns:1fr auto 1fr; grid-template-rows:65px 44px; margin-bottom:14px; }
+@media(max-width:800px) {
+  .room.immersive-room { --gutter:12px; }
+  .playroom-nav { grid-template-columns:1fr auto 1fr; grid-template-rows:65px 56px; margin-bottom:14px; border:0; }
   .playroom-nav .room-wordmark { grid-column:2; gap:7px; }
   .playroom-nav .room-wordmark>span { font-size:.45rem; letter-spacing:.16em; }
   .playroom-nav .room-wordmark>i { font-size:2.4rem; }
   .playroom-nav .playroom-menu { grid-column:3; grid-row:1; }
-  .playroom-nav .visible-game-switch { grid-column:1/-1; grid-row:2; width:min(300px,100%); }
+  .playroom-nav .visible-game-switch { grid-column:1/-1; grid-row:2; width:min(320px,100%); }
   .immersive-room .visible-game-switch button { min-width:0; min-height:44px; padding:10px; }
   .playroom-menu summary { min-width:40px; min-height:40px; }
   .menu-content { padding:18px; }
-  .immersive-room .scene-stack { max-width:480px; }
-  .immersive-room .puppy-board { height:auto; aspect-ratio:5/6; }
+
   .immersive-room .board-space { width:calc(100% - 9px); height:calc(100% - 9px); padding:6px; border-radius:9px; }
   .immersive-room .space-title,.immersive-room .untitled-space .space-title { font-size:.75rem; }
   .immersive-room .space-number { font-size:.5625rem; }
@@ -93,17 +93,10 @@
 }
 @media(prefers-reduced-motion:reduce) { .immersive-room .scene-layer,.immersive-room .scene-layer.immersive-wheel { transition:none; transform:none; } }
 
-/* Match the campaign's compact masthead and graphic, always-visible navigation. */
-@media(min-width:701px) {
- .playroom-nav { grid-template-columns:1fr auto 1fr; grid-template-rows:88px; margin-bottom:24px; background:#eee9df; }
- .playroom-nav .room-wordmark { grid-column:1; grid-row:1; justify-self:start; }
- .immersive-room .visible-game-switch { grid-column:2; grid-row:1; padding:4px; border:1px solid #64263b25; border-radius:40px; }
- .immersive-room .visible-game-switch::before { inset:4px auto 4px 4px; height:auto; width:calc(50% - 4px); border-radius:30px; background:#64263b; }
- .immersive-room .visible-game-switch button { min-width:150px; min-height:44px; position:relative; z-index:1; }
- .immersive-room .visible-game-switch button[aria-pressed="true"] { color:#fff5e7; }
+
+@media(max-width:650px) {
+ .room.immersive-room { --scene-height:min(calc((100vw - 24px) * 1.2),576px); }
+ .immersive-room .scene-stack { max-width:480px; }
+ .immersive-room .puppy-board { height:auto; aspect-ratio:5/6; }
+ .immersive-room .puppy-token>span { font-size:1.3rem; margin-top:-8px; }
 }
-.immersive-room .scene-layer { transform:translate3d(0,20px,0) scale(.975); opacity:0; transition:opacity 380ms ease,transform 760ms var(--ease-luxe),visibility 0s 760ms; }
-.immersive-room .scene-layer.immersive-wheel { transform:translate3d(0,20px,0) scale(.975); }
-.immersive-room .scene-layer.scene-active { transform:translate3d(0,0,0) scale(1); opacity:1; transition:opacity 580ms 100ms ease,transform 900ms var(--ease-luxe),visibility 0s; }
-.immersive-room .board-space { border-radius:8px; box-shadow:inset 0 1px #fff9f0,0 4px 14px #0002; }
-@media(prefers-reduced-motion:reduce) { .immersive-room .scene-layer { transform:none; transition:none; } }
