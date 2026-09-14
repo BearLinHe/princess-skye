@@ -26,11 +26,18 @@
 .menu-content .library-title { flex-wrap:wrap; gap:8px; }
 .menu-content .library-controls button { width:100%; margin:0; min-width:0; padding:12px 8px; }
 .menu-content .library-tools { flex-wrap:wrap; gap:4px 16px; }
-/* Keep both games mounted so switching preserves each game's state. */
-.immersive-room .scene-stack { display:grid; width:100%; max-width:1720px; min-height:var(--scene-height); margin:auto; padding:0; border:0; background:none; overflow:clip; }
-.immersive-room .scene-layer { grid-area:1/1; align-self:center; min-width:0; width:100%; padding:0; border:0; border-radius:0; background:none; box-shadow:none; opacity:0; visibility:hidden; pointer-events:none; transform:translate3d(0,-12px,0) scale(.985); transition:opacity 240ms ease,transform 580ms var(--ease-luxe),visibility 0s 580ms; }
-.immersive-room .scene-layer.immersive-wheel { display:grid; place-items:center; transform:translate3d(0,12px,0) scale(.985); }
-.immersive-room .scene-layer.scene-active { visibility:visible; pointer-events:auto; opacity:1; transform:translate3d(0,0,0) scale(1); transition:opacity 480ms 120ms ease,transform 720ms var(--ease-luxe),visibility 0s; }
+/* A directional silk-like wipe reveals each game without overlapping scenes. */
+.immersive-room .scene-stack { position:relative; isolation:isolate; display:grid; width:100%; max-width:1720px; min-height:var(--scene-height); margin:auto; padding:0; border:0; background:none; overflow:clip; --scene-direction:1; }
+.immersive-room[data-scene-direction="backward"] .scene-stack { --scene-direction:-1; }
+.immersive-room .scene-layer { grid-area:1/1; align-self:center; min-width:0; width:100%; padding:0; border:0; border-radius:0; background:none; box-shadow:none; visibility:hidden; pointer-events:none; }
+.immersive-room .scene-layer.immersive-wheel { display:grid; place-items:center; }
+.immersive-room .scene-layer.scene-active { visibility:visible; pointer-events:auto; }
+.scene-curtain { display:none; position:absolute; inset:0; z-index:5; place-items:center; background:linear-gradient(105deg,#432331,#52283a 55%,#432331); pointer-events:none; border-inline:1px solid #dec6b66b; }
+.scene-seal { display:grid; place-items:center; width:96px; height:96px; padding:0 8px 5px 0; border:1px solid #ead5c04d; border-radius:50%; color:#e7d5c3; font-family:var(--font-serif); font-style:italic; font-size:3.5rem; line-height:1; }
+[data-scene-phase="cover"] .scene-curtain { display:grid; animation:scene-cover 320ms cubic-bezier(.65,0,.35,1) both; will-change:transform; }
+[data-scene-phase="reveal"] .scene-curtain { display:grid; animation:scene-reveal 500ms cubic-bezier(.65,0,.2,1) both; will-change:transform; }
+@keyframes scene-cover { from { transform:translate3d(calc(-101% * var(--scene-direction)),0,0); } to { transform:translate3d(0,0,0); } }
+@keyframes scene-reveal { from { transform:translate3d(0,0,0); } to { transform:translate3d(calc(101% * var(--scene-direction)),0,0); } }
 .immersive-room .puppy-board { height:var(--scene-height); }
 .immersive-room .board-space { width:calc(100% - 16px); max-width:112px; height:calc(100% - 14px); max-height:94px; padding:10px; border-radius:8px; background:#f1e9dcdf; border:1px solid #fff5e8b0; color:#382a2d; box-shadow:inset 0 1px #fff9f0,0 6px 18px #0002; transition:transform 300ms var(--ease-luxe),background 180ms; }
 .immersive-room .board-space:nth-of-type(even),.immersive-room .board-space.visited:nth-of-type(even):not(.endpoint) { background:#573040e6; border-color:#d2acb65c; color:#fff4e8; box-shadow:inset 0 1px #ffffff14,0 6px 18px #0002; }
@@ -48,8 +55,9 @@
 .immersive-room .prize-wheel { border:10px solid #f2e5d1; outline:1px solid #ddc6a575; outline-offset:5px; box-shadow:0 25px 60px #0006,inset 0 0 0 2px #f7e8d530; }
 .immersive-room .wheel-center { width:94px; height:94px; background:#f2e5d1; color:#562b3b; border:1px solid #d7bea0; box-shadow:0 4px 20px #0003; font-size:3.6rem; }
 .immersive-room .wheel-pointer { width:17px; height:30px; background:#f9edd9; filter:drop-shadow(0 3px 3px #0006); }
-.play-dock { width:min(1000px,100%); display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:12px 40px; margin:12px auto 0; padding:18px 0 max(22px,env(safe-area-inset-bottom)); color:#fff6e9; text-shadow:0 2px 10px #000; }
-.dock-instruction { min-width:0; min-height:66px; max-height:180px; overflow:auto; overflow-wrap:anywhere; animation:editorial-arrive 380ms var(--ease-luxe) both; }
+.play-dock { width:min(1000px,100%); display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:12px 40px; margin:12px auto 0; padding:18px 0 max(22px,env(safe-area-inset-bottom)); color:#fff6e9; text-shadow:0 2px 10px #000; opacity:1; transform:none; transition:opacity 340ms 120ms ease,transform 460ms var(--ease-luxe); }
+[data-scene-phase="cover"] .play-dock { opacity:0; transform:translateY(6px); transition:opacity 180ms ease,transform 260ms ease; }
+.dock-instruction { min-width:0; min-height:66px; max-height:180px; overflow:auto; overflow-wrap:anywhere; }
 .dock-instruction h2 { margin:0 0 4px; font-family:var(--font-serif); font-weight:400; font-size:2.25rem; }
 .dock-instruction p { margin:0; font-size:.9375rem; line-height:1.65; white-space:pre-wrap; }
 .dock-label { font-size:.625rem; letter-spacing:.15em; color:#ead7b7; }
@@ -91,7 +99,7 @@
   .draft-shortcut { justify-self:center; }
   .immersive-room .space-dialog { padding:22px 18px; }
 }
-@media(prefers-reduced-motion:reduce) { .immersive-room .scene-layer,.immersive-room .scene-layer.immersive-wheel { transition:none; transform:none; } }
+@media(prefers-reduced-motion:reduce) { .scene-curtain { display:none!important; } .play-dock { transition:none; } }
 
 
 @media(max-width:650px) {

@@ -3,6 +3,7 @@
 import { TransitionLink as Link } from "../components/route-transition";
 import Image from "next/image";
 import GameLibrary from "./library";
+import { useGameTransition } from "./use-game-transition";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { BOARD_COLUMNS, BOARD_ROWS, MOBILE_BOARD_COLUMNS, MOBILE_BOARD_ROWS, boardDirection, puppyFacesRight, boardCoordinates, defaultOptions, defaultSpaces, destination, readConfig, wheelRotation, sectors, chooseWeighted, type Choice, type Space } from "./rules";
 
@@ -18,7 +19,8 @@ export default function GameRoom() {
   const [access, setAccess] = useState<boolean | null>(null);
   const [canEdit, setCanEdit] = useState(false);
   const [dirty, setDirty] = useState(false);
-  const [game, setGame] = useState<"board" | "wheel">("board");
+  const transition = useGameTransition();
+  const { game, switching } = transition;
   const [spaces, setSpaces] = useState(defaultSpaces);
   const [options, setOptions] = useState(defaultOptions);
   const [position, setPosition] = useState(0);
@@ -60,13 +62,13 @@ export default function GameRoom() {
     catch { setNote("Draft updated. Use Save game to keep your changes."); }
   }
   function selectSpace(index: number) {
-    if (busyRef.current) return;
+    if (busyRef.current || switching) return;
     setPreview(index);
     if (!canEdit) return;
     setSelected(index); setDraft({ ...spaces[index] }); setEditing(true); setNote("");
   }
   function roll() {
-    if (busyRef.current || position === 24) return;
+    if (busyRef.current || switching || position === 24) return;
     setPreview(null); setEditing(false); setRunning(true); setNote("");
     const value = Math.floor(Math.random() * 6) + 1;
     const end = destination(position, value);
@@ -83,7 +85,7 @@ export default function GameRoom() {
     }, reduced ? 0 : 580);
   }
   function spin() {
-    if (busyRef.current) return;
+    if (busyRef.current || switching) return;
     setPreview(null); setEditing(false); setRunning(true); setWinner(null); setNote("");
     const index = chooseWeighted(options, Math.random());
     setAngle(wheelRotation(angle, sectors(options)[index].center));
@@ -91,12 +93,15 @@ export default function GameRoom() {
     later(() => { setWinner(options[index].label); setAnnouncement(`Selected: ${options[index].label}`); setRunning(false); }, window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 30 : 4500);
   }
   function switchGame(next: "board" | "wheel") {
-    if (busyRef.current || editing || next === game) return;
+    if (busyRef.current || editing || next === transition.selected) return;
     if (menu.current) menu.current.open = false;
-    setPreview(null); setGame(next); setEditing(false); setNote("");
-    setAnnouncement(next === "board" ? "Puppy Steps. Roll to begin." : "The Wheel. Spin to choose.");
+    setPreview(null); transition.request(next); setEditing(false); setNote("");
   }
-  function resetBoard() { if (!busyRef.current) { setPreview(null); setPosition(0); setDice(1); setEditing(false); setAnnouncement("Back at the start."); } }
+  useEffect(() => {
+    setAnnouncement(game === "board" ? "Puppy Steps." : "The Wheel. Spin to choose.");
+  }, [game]);
+
+  function resetBoard() { if (!busyRef.current && !switching) { setPreview(null); setPosition(0); setDice(1); setEditing(false); setAnnouncement("Back at the start."); } }
   const shownSpace = spaces[preview ?? position];
   const coordinates = boardCoordinates(position);
   const mobileCoordinates = boardCoordinates(position, true);
@@ -107,39 +112,44 @@ export default function GameRoom() {
 
   if (access !== true) return <main className="room access-screen"><Link href="/" className="room-wordmark">Princess <i>Skye.</i></Link><div className="access-card"><span className="room-kicker">18+ ONLY</span><h1>The Playroom</h1><p>By entering, you confirm you’re 18+.</p><button className="game-primary" disabled={access === null} onClick={() => { try { sessionStorage.setItem("skye-adult", "yes"); } catch {} setAccess(true); }}>Enter the playroom <span>↗</span></button><Link className="game-link" href="/">Back</Link></div></main>;
 
-  return <main className="room immersive-room" data-game={game}>
+  return <main className="room immersive-room" data-game={transition.selected} data-scene-phase={transition.phase} data-scene-direction={transition.direction}>
     <div className="playroom-photo" aria-hidden="true"><Image src="/images/skye-playroom.png" alt="" fill unoptimized /></div>
     <header className="playroom-nav">
       <Link href="/" className="room-wordmark"><span>Princess</span><i>Skye.</i></Link>
-<div className="game-switch visible-game-switch" aria-label="Choose a game"><button aria-pressed={game === "board"} disabled={busy || editing} onClick={() => switchGame("board")}>Puppy Steps</button><button aria-pressed={game === "wheel"} disabled={busy || editing} onClick={() => switchGame("wheel")}>The Wheel</button></div>
+<div className="game-switch visible-game-switch" aria-label="Choose a game"><button aria-pressed={transition.selected === "board"} disabled={busy || editing} onClick={() => switchGame("board")}>Puppy Steps</button><button aria-pressed={transition.selected === "wheel"} disabled={busy || editing} onClick={() => switchGame("wheel")}>The Wheel</button></div>
       <details className="playroom-menu" ref={menu}>
         <summary aria-label="Open game menu">{dirty ? <span className="unsaved-dot" aria-label="Unsaved changes" /> : null}<svg className="menu-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 8h16M4 16h16" stroke="currentColor" strokeWidth="1.2" /></svg></summary>
         <div className="menu-content">
-    <GameLibrary config={{ spaces, options }} disabled={busy || editing} dirty={dirty} onAdmin={setCanEdit} onSaved={() => setDirty(false)} onLoad={config => { setSpaces(config.spaces); setOptions(config.options); setDraft(config.spaces[0]); setOptionDraft(config.options); setPosition(0); setPreview(null); setSelected(0); setAngle(0); setWinner(null); setEditing(false); setDirty(false); setNote(""); }} />
-          {canEdit && game === "wheel" && <button className="game-secondary" disabled={busy} onClick={() => { setOptionDraft(options.map(o => ({ ...o }))); setEditing(true); }}>Edit choices</button>}
+    <GameLibrary config={{ spaces, options }} disabled={busy || editing || switching} dirty={dirty} onAdmin={setCanEdit} onSaved={() => setDirty(false)} onLoad={config => { setSpaces(config.spaces); setOptions(config.options); setDraft(config.spaces[0]); setOptionDraft(config.options); setPosition(0); setPreview(null); setSelected(0); setAngle(0); setWinner(null); setEditing(false); setDirty(false); setNote(""); }} />
+          {canEdit && game === "wheel" && <button className="game-secondary" disabled={busy || switching} onClick={() => { setOptionDraft(options.map(o => ({ ...o }))); setEditing(true); }}>Edit choices</button>}
           <Link href="/" className="game-link">Leave ↗</Link>
         </div>
       </details>
     </header>
-    <div className="immersive-stage scene-stack">
-      <section className={`scene-layer photo-board ${game === "board" ? "scene-active" : ""}`} aria-label="Puppy Steps board" aria-hidden={game !== "board"} inert={game !== "board"}>
+    <div className="immersive-stage scene-stack" aria-busy={switching}>
+      <div className="scene-curtain" aria-hidden="true" onAnimationEnd={event => {
+        if (event.target !== event.currentTarget) return;
+        if (event.animationName === "scene-cover") transition.advance("cover");
+        if (event.animationName === "scene-reveal") transition.advance("reveal");
+      }}><span className="scene-seal">S</span></div>
+      <section className={`scene-layer photo-board ${game === "board" ? "scene-active" : ""}`} aria-label="Puppy Steps board" aria-hidden={game !== "board"} inert={game !== "board" || switching}>
           <div className="puppy-board">
             <svg className="board-trail desktop-trail" viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true"><polyline points={trailPoints.join(" ")} className="trail-track" /><polyline points={trailPoints.slice(0, position + 1).join(" ")} className="trail-complete" /></svg>
             <svg className="board-trail mobile-trail" viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true"><polyline points={mobileTrailPoints.join(" ")} className="trail-track" /><polyline points={mobileTrailPoints.slice(0, position + 1).join(" ")} className="trail-complete" /></svg>
-            {spaces.map((space, index) => { const cell = boardCoordinates(index); const mobileCell = boardCoordinates(index, true); return <button key={index} style={{ "--cell-row": cell.row + 1, "--cell-col": cell.col + 1, "--mobile-row": mobileCell.row + 1, "--mobile-col": mobileCell.col + 1 } as CSSProperties} className={`board-space ${/^Space \d+$/.test(space.title) ? "untitled-space" : ""} ${position === index ? "current" : ""} ${index < position ? "visited" : ""} ${index === 0 || index === 24 ? "endpoint" : ""} ${index === 24 ? "finish-space" : ""} ${editing && selected === index ? "selected-space" : ""}`} disabled={busy} onClick={() => selectSpace(index)} aria-label={`${canEdit ? "Edit space" : "Space"} ${index}: ${space.title}`} aria-current={position === index ? "step" : undefined}><span className="space-number">{String(index).padStart(2, "0")} <span className="desktop-direction">{boardDirection(index)}</span><span className="mobile-direction">{boardDirection(index, true)}</span></span><span className="space-emblem" aria-hidden="true">{index === 0 ? "✧" : index === 24 ? "♛" : "◇"}</span><span className="space-title">{/^Space \d+$/.test(space.title) ? (space.content === defaultSpaces[index].content ? "" : space.content) : space.title}</span></button>; })}
+            {spaces.map((space, index) => { const cell = boardCoordinates(index); const mobileCell = boardCoordinates(index, true); return <button key={index} style={{ "--cell-row": cell.row + 1, "--cell-col": cell.col + 1, "--mobile-row": mobileCell.row + 1, "--mobile-col": mobileCell.col + 1 } as CSSProperties} className={`board-space ${/^Space \d+$/.test(space.title) ? "untitled-space" : ""} ${position === index ? "current" : ""} ${index < position ? "visited" : ""} ${index === 0 || index === 24 ? "endpoint" : ""} ${index === 24 ? "finish-space" : ""} ${editing && selected === index ? "selected-space" : ""}`} disabled={busy || switching} onClick={() => selectSpace(index)} aria-label={`${canEdit ? "Edit space" : "Space"} ${index}: ${space.title}`} aria-current={position === index ? "step" : undefined}><span className="space-number">{String(index).padStart(2, "0")} <span className="desktop-direction">{boardDirection(index)}</span><span className="mobile-direction">{boardDirection(index, true)}</span></span><span className="space-emblem" aria-hidden="true">{index === 0 ? "✧" : index === 24 ? "♛" : "◇"}</span><span className="space-title">{/^Space \d+$/.test(space.title) ? (space.content === defaultSpaces[index].content ? "" : space.content) : space.title}</span></button>; })}
             <div className={`puppy-token ${busy ? "crawling" : ""}`} style={{ "--token-left": `${coordinates.col * 100 / BOARD_COLUMNS}%`, "--token-top": `${coordinates.row * 100 / BOARD_ROWS}%`, "--mobile-left": `${mobileCoordinates.col * 100 / MOBILE_BOARD_COLUMNS}%`, "--mobile-top": `${mobileCoordinates.row * 100 / MOBILE_BOARD_ROWS}%`, "--face": puppyFacesRight(position) ? -1 : 1, "--mobile-face": puppyFacesRight(position, true) ? -1 : 1 } as CSSProperties} aria-hidden="true"><span>🐕</span></div>
           </div>
       </section>
-      <section className={`scene-layer immersive-wheel ${game === "wheel" ? "scene-active" : ""}`} aria-label="The Wheel" aria-hidden={game !== "wheel"} inert={game !== "wheel"}><div className="wheel-stage"><div className="wheel-pointer" aria-hidden="true" /><div className="prize-wheel" style={{ background: `conic-gradient(${gradient})`, transform: `rotate(${angle}deg)` }} aria-hidden="true">{options.map((option, i) => <div className="wheel-label" key={i} style={{ transform: `rotate(${slices[i].center}deg)` }}><span>{slices[i].percent >= 8 ? option.label.slice(0, 20) : i + 1}</span></div>)}</div><div className="wheel-center" aria-hidden="true">S<span>✧</span></div></div></section>
+      <section className={`scene-layer immersive-wheel ${game === "wheel" ? "scene-active" : ""}`} aria-label="The Wheel" aria-hidden={game !== "wheel"} inert={game !== "wheel" || switching}><div className="wheel-stage"><div className="wheel-pointer" aria-hidden="true" /><div className="prize-wheel" style={{ background: `conic-gradient(${gradient})`, transform: `rotate(${angle}deg)` }} aria-hidden="true">{options.map((option, i) => <div className="wheel-label" key={i} style={{ transform: `rotate(${slices[i].center}deg)` }}><span>{slices[i].percent >= 8 ? option.label.slice(0, 20) : i + 1}</span></div>)}</div><div className="wheel-center" aria-hidden="true">S<span>✧</span></div></div></section>
     </div>
-    <section className="play-dock" aria-label="Game controls">
-      <div key={game} className="dock-instruction" aria-live="polite">
+    <section className="play-dock" aria-label="Game controls" inert={switching}>
+      <div className="dock-instruction" aria-live="polite">
         {game === "board" ? <><span className="dock-label">{preview !== null && preview !== position ? `SPACE ${String(preview).padStart(2, "0")}` : position === 24 ? "FINISH" : ""}</span>{!/^Space \d+$/.test(shownSpace.title) && <h2>{shownSpace.title}</h2>}<p>{shownSpace.content === "Add your own instruction here." ? "" : shownSpace.content}</p>{preview !== null && preview !== position && <button className="game-link" onClick={() => setPreview(null)}>Back to current space</button>}</> : <><h2>{winner || "The Wheel"}</h2>{busy && <p>Spinning…</p>}</>}
       </div>
       <div className="dock-actions">
         {game === "board" && <div className={`dock-die ${busy ? "rolling" : ""}`} aria-label={`Dice: ${dice}`}><DiceFace value={dice} /></div>}
-        <button className="game-primary roll-button" disabled={busy} onClick={game === "board" ? position === 24 ? resetBoard : roll : spin}>{busy ? "…" : game === "board" ? position === 24 ? "Play again" : "Roll" : "Spin"}<span aria-hidden="true">↗</span></button>
-        {game === "board" && <button className="reset-button" aria-label="Start again" title="Start again" disabled={busy} onClick={resetBoard}>↺</button>}
+        <button className="game-primary roll-button" disabled={busy || switching} onClick={game === "board" ? position === 24 ? resetBoard : roll : spin}>{busy ? "…" : game === "board" ? position === 24 ? "Play again" : "Roll" : "Spin"}<span aria-hidden="true">↗</span></button>
+        {game === "board" && <button className="reset-button" aria-label="Start again" title="Start again" disabled={busy || switching} onClick={resetBoard}>↺</button>}
       </div>
       {dirty && canEdit && <button className="draft-shortcut" onClick={() => { if (menu.current) { menu.current.open = true; menu.current.scrollIntoView({ behavior: "smooth", block: "start" }); menu.current.querySelector<HTMLButtonElement>(".library-controls .game-primary")?.focus(); } }}>Unsaved changes · Save ↗</button>}
     </section>
